@@ -7,61 +7,51 @@
 #include <Adafruit_BME280.h>
 #include <MICS6814.h>  
 
-// Define your GPIO pins for power gating (if applicable)
 #define OLED_POWER_PIN 12
 #define SENSOR_POWER_PIN 13
 
-// Define I2C addresses for your sensors
+// I2C addresses
 #define OLED_I2C_ADDR 0x3C
 #define SGP40_I2C_ADDR 0x59
 #define SCD30_I2C_ADDR 0x61
 #define BME280_I2C_ADDR 0x76
 
-// Initialize your peripherals
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 Adafruit_SGP40 sgp40;
 Adafruit_SCD30 scd30;
 Adafruit_BME280 bme280;
 MICS6814 mics;  // Hypothetical object for MICS6814
 
-#define WAKEUP_TIME 60 // Time in seconds to wake up from deep sleep
-
+#define WAKEUP_TIME 60 
 void setup() {
   Serial.begin(115200);
   
-  // Initialize power gating pins (if applicable)
   pinMode(OLED_POWER_PIN, OUTPUT);
   pinMode(SENSOR_POWER_PIN, OUTPUT);
   
-  // Power up peripherals
   digitalWrite(OLED_POWER_PIN, HIGH);
   digitalWrite(SENSOR_POWER_PIN, HIGH);
   
-  // Initialize sensors and display
+  // initialize sensors and display
   initSensors();
   initDisplay();
-
-  // Take sensor readings and update the display
+  
   readSensors();
   updateDisplay();
 
-  // Power down peripherals if using power gating
   digitalWrite(OLED_POWER_PIN, LOW);
   digitalWrite(SENSOR_POWER_PIN, LOW);
 
-  // Set the wake-up source: Timer (or other options like GPIO)
   esp_sleep_enable_timer_wakeup(WAKEUP_TIME * 1000000);
 
-  // Enter deep sleep mode
+  // enter deep sleep mode
   Serial.println("Entering deep sleep for " + String(WAKEUP_TIME) + " seconds");
   esp_deep_sleep_start();
 }
 
 void loop() {
-  // The code will not reach here in deep sleep mode.
 }
 
-// Initialize your sensors
 void initSensors() {
   Wire.begin();
   
@@ -84,7 +74,7 @@ void initSensors() {
   mics.begin();  // Assuming a begin method exists in the library
 }
 
-// Initialize your display
+// Initialize display
 void initDisplay() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_I2C_ADDR)) {
     Serial.println("SSD1306 allocation failed");
@@ -137,11 +127,9 @@ void readSensors() {
   Serial.println(no2);
 }
 
-// Update display with sensor data
 void updateDisplay() {
   display.clearDisplay();
   
-  // Display sensor data (example)
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
